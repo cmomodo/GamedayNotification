@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  GDTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: gd-topic
+
+  PhoneNumberSubscription:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      Protocol: sms
+      Endpoint: "+447413922324" # Ensure the phone number is in E.164 format
+      TopicArn: !Ref GDTopic
+
+  EmailSubscription:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      Protocol: email
+      Endpoint: "ceesay.ml@outlook.com"
+      TopicArn: !Ref GDTopic
+
+Outputs:
+  SNSTopicArn:
+    Description: The ARN of the SNS topic
+    Value: !Ref GDTopic
