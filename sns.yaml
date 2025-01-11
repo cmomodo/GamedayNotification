@@ -19,6 +19,31 @@ Resources:
       Endpoint: "ceesay.ml@outlook.com"
       TopicArn: !Ref GDTopic
 
+  PublishPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      PolicyName: SnsPublishPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sns:Publish
+            Resource: !Sub arn:aws:sns:us-east-1:449095351082:gd-topic
+
+  PublishRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SnsPublishPolicy
+          PolicyDocument: !Ref PublishPolicy
+
 Outputs:
   SNSTopicArn:
     Description: The ARN of the SNS topic
