@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: "2010-10-17"
+Description: "Deploy Lambda function with Secrets Manager integration"
+
+Resources:
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: arn:aws:sns:us-east-1:449095351082:gd-topic
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: "*"
+
+  # Lambda Function
+  MyLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "NBAApiLambda"
+      Handler: "main.lambda_handler"
+      Runtime: "python3.11"
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: "your-bucket-name"
+        S3Key: "path/to/your/lambda.zip"
+      Environment:
+        Variables:
+          NBA_API_SECRET_NAME: "NBA_API_KEY"
+          SNS_TOPIC_SECRET_NAME: "SNS_TOPIC_ARN"
+      Timeout: 15
+
+  # KMS Key for encrypting secrets
+  SecretsKMSKey:
+    Type: "AWS::KMS::Key"
+    Properties:
+      Description: "KMS key for NBA API secrets"
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
+
+  # NBA API Key Secret
+  NBAApiSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: "NBA_API_KEY"
+      Description: "NBA API Key for Lambda function"
+      KmsKeyId: !Ref SecretsKMSKey
+      SecretString: '{"NBA_API_KEY": "your-api-key-here"}'
+
+  # SNS Topic ARN Secret
+  SNSTopicSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: "SNS_TOPIC_ARN"
+      Description: "SNS Topic ARN for Lambda function"
+      KmsKeyId: !Ref SecretsKMSKey
+      SecretString: '{"SNS_TOPIC_ARN": "your-sns-topic-arn-here"}'
+
+Outputs:
+  LambdaFunctionArn:
+    Description: "ARN of the deployed Lambda function"
+    Value: !GetAtt MyLambdaFunction.Arn
