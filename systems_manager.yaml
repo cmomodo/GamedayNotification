@@ -1,37 +1,37 @@
-AWSTemplateFormatVersion: "2010-10-17"
-Description: "Secrets Manager configuration for NBA Lambda"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Secrets Manager configuration for NBA Lambda
 
 Resources:
   # KMS Key for encrypting secrets
   SecretsKMSKey:
-    Type: "AWS::KMS::Key"
+    Type: AWS::KMS::Key
     Properties:
-      Description: "KMS key for NBA API secrets"
+      Description: KMS key for NBA API secrets
       EnableKeyRotation: true
       KeyPolicy:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: "kms:*"
-            Resource: "*"
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
+            Resource: '*'
 
   # NBA API Key Secret
   NBAApiSecret:
-    Type: "AWS::SecretsManager::Secret"
+    Type: AWS::SecretsManager::Secret
     Properties:
-      Name: "NBA_API_KEY"
-      Description: "NBA API Key for Lambda function"
+      Name: NBA_API_KEY
+      Description: NBA API Key for Lambda function
       KmsKeyId: !Ref SecretsKMSKey
       SecretString: '{"NBA_API_KEY": "089ede2d73b84f31a1d9d9142ca30ba5"}'
 
   # SNS Topic ARN Secret
   SNSTopicSecret:
-    Type: "AWS::SecretsManager::Secret"
+    Type: AWS::SecretsManager::Secret
     Properties:
-      Name: "SNS_TOPIC_ARN"
-      Description: "SNS Topic ARN for Lambda function"
+      Name: SNS_TOPIC_ARN
+      Description: SNS Topic ARN for Lambda function
       KmsKeyId: !Ref SecretsKMSKey
       SecretString: '{"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:449095351082:gd-topic"}'
