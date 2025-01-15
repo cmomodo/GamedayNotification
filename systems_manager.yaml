@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Secrets Manager configuration for NBA Lambda
 
 Resources:
@@ -9,14 +9,14 @@ Resources:
       Description: KMS key for NBA API secrets
       EnableKeyRotation: true
       KeyPolicy:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
               AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action: kms:*
-            Resource: '*'
+            Resource: "*"
 
   # NBA API Key Secret
   NBAApiSecret:
