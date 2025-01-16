@@ -33,7 +33,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: "*"
+                Resource:
+                  - arn:aws:secretsmanager:us-east-1:449095351082:secret:NBA_API_KEY-FERn8n
+                  - arn:aws:secretsmanager:us-east-1:449095351082:secret:SNS_TOPIC_ARN-aAodvl
         - PolicyName: SecretsManagerAndKMSAccess
           PolicyDocument:
             Version: "2012-10-17"
@@ -43,7 +45,8 @@ Resources:
                   - secretsmanager:GetSecretValue
                   - kms:Decrypt
                 Resource:
-                  - arn:aws:secretsmanager:us-east-1:449095351082:secret:mysecret
+                  - arn:aws:secretsmanager:us-east-1:449095351082:secret:NBA_API_KEY-FERn8n
+                  - arn:aws:secretsmanager:us-east-1:449095351082:secret:SNS_TOPIC_ARN-aAodvl
                   - arn:aws:kms:us-east-1:449095351082:key/039ee43e-87ae-4bfb-aa18-1c6845b3bf6e
               - Effect: Allow
                 Action:

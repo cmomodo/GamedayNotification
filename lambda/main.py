@@ -1,14 +1,14 @@
 import os
-import json
-import urllib.request
 import boto3
-from datetime import datetime, timedelta, timezone
+import json
+from datetime import datetime, timezone, timedelta
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError, URLError
 
 def get_secret(secret_name):
     client = boto3.client('secretsmanager')
     response = client.get_secret_value(SecretId=secret_name)
-    secret = json.loads(response['SecretString'])
-    return secret
+    return json.loads(response['SecretString'])
 
 def format_game_data(game):
     game_time = game.get("DateTime", "N/A")
@@ -48,15 +48,21 @@ def lambda_handler(event, context):
 
     # Fetch data from the API
     api_url = f"https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{today_date}?key={api_key}"
-    print(today_date)
+    print(f"API URL: {api_url}")
 
     try:
-        with urllib.request.urlopen(api_url) as response:
+        with urlopen(api_url) as response:
             data = json.loads(response.read().decode())
             print(json.dumps(data, indent=4))  # Debugging: log the raw data
+    except HTTPError as e:
+        print(f"HTTPError fetching data from API: {e.code} - {e.reason}")
+        return {"statusCode": e.code, "body": f"HTTPError fetching data from API: {e.reason}"}
+    except URLError as e:
+        print(f"URLError fetching data from API: {e.reason}")
+        return {"statusCode": 500, "body": f"URLError fetching data from API: {e.reason}"}
     except Exception as e:
-        print(f"Error fetching data from API: {e}")
-        return {"statusCode": 500, "body": "Error fetching data"}
+        print(f"Unexpected error fetching data from API: {e}")
+        return {"statusCode": 500, "body": f"Unexpected error fetching data from API: {e}"}
 
     # Include all games (final, in-progress, and scheduled)
     messages = [format_game_data(game) for game in data]
@@ -67,11 +73,11 @@ def lambda_handler(event, context):
         sns_client.publish(
             TopicArn=sns_topic_arn,
             Message=final_message,
-            Subject="NBA Game Updates"
+            Subject=f"NBA Games for {today_date}"
         )
-        print("Message published to SNS successfully.")
+        print("Message published to SNS successfully")
     except Exception as e:
         print(f"Error publishing to SNS: {e}")
-        return {"statusCode": 500, "body": "Error publishing to SNS"}
+        return {"statusCode": 500, "body": f"Error publishing to SNS: {e}"}
 
-    return {"statusCode": 200, "body": "Data processed and sent to SNS"}
+    return {"statusCode": 200, "body": "Success"}
