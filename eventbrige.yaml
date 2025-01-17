@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EventBridge rule to trigger Lambda function on a recurring schedule
+
+Resources:
+  # IAM Role for EventBridge to invoke Lambda
+  EventBridgeInvokeLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: InvokeLambdaPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
+
+  # EventBridge Rule
+  NBAApiLambdaScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(1 day)" # Adjust the schedule as needed
+      Targets:
+        - Arn: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
+          Id: "NBAApiLambdaTarget"
+
+Outputs:
+  EventBridgeRuleArn:
+    Description: ARN of the EventBridge rule
+    Value: !GetAtt NBAApiLambdaScheduleRule.Arn
