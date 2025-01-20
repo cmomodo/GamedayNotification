@@ -30,12 +30,21 @@ def lambda_handler(event, context):
     try:
         api_secret = get_secret(os.getenv("NBA_API_SECRET_NAME"))
         sns_secret = get_secret(os.getenv("SNS_TOPIC_SECRET_NAME"))
+        print("Retrieving API key from Secrets Manager...")
+        print(f"API Secret content: {json.dumps(api_secret)}")
     except Exception as e:
         print(f"Error fetching secrets: {e}")
         return {"statusCode": 500, "body": "Error fetching secrets"}
     
-    api_key = api_secret['NBA_API_KEY']
-    sns_topic_arn = sns_secret['SNS_TOPIC_ARN']
+    api_key = api_secret.get('NBA_API_KEY')
+    if not api_key:
+        print("API key is missing or empty")
+        return {"statusCode": 500, "body": "API key configuration error"}
+        
+    sns_topic_arn = sns_secret.get('SNS_TOPIC_ARN')
+    if not sns_topic_arn:
+        print("SNS topic ARN is missing or empty")
+        return {"statusCode": 500, "body": "SNS configuration error"}
     
     sns_client = boto3.client("sns")
 

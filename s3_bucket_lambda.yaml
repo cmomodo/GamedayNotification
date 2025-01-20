@@ -53,6 +53,14 @@ Resources:
                   - kms:GenerateDataKey
                   - kms:Decrypt
                 Resource: arn:aws:kms:us-east-1:449095351082:key/039ee43e-87ae-4bfb-aa18-1c6845b3bf6e
+        - PolicyName: EventBridgeInvokeLambda
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
 
   # Lambda Function
   MyLambdaFunction:
