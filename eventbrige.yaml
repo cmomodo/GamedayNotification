@@ -23,10 +23,12 @@ Resources:
                 Resource: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
 
   # EventBridge Rule
-  NBAApiLambdaScheduleRule:
+  GdRule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(1 minute)" # Adjust the schedule for testing
+      Name: gd_rule
+      EventBusName: default
+      ScheduleExpression: "cron(0 12 * * ? *)" # This cron expression triggers at 12 PM (UTC) every day
       Targets:
         - Arn: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
           Id: "NBAApiLambdaTarget"
@@ -34,4 +36,4 @@ Resources:
 Outputs:
   EventBridgeRuleArn:
     Description: ARN of the EventBridge rule
-    Value: !GetAtt NBAApiLambdaScheduleRule.Arn
+    Value: !GetAtt GdRule.Arn
