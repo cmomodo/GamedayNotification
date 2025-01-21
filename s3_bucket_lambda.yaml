@@ -79,6 +79,15 @@ Resources:
           SNS_TOPIC_SECRET_NAME: SNS_TOPIC_ARN
       Timeout: 15
 
+  # Add Lambda permission for EventBridge
+  LambdaPermissionForEventBridge:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref MyLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt GdRule.Arn
+
 Outputs:
   LambdaFunctionArn:
     Description: ARN of the deployed Lambda function

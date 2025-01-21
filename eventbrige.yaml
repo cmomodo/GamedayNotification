@@ -32,6 +32,7 @@ Resources:
       Targets:
         - Arn: arn:aws:lambda:us-east-1:449095351082:function:NBAApiLambda
           Id: "NBAApiLambdaTarget"
+          RoleArn: !GetAtt EventBridgeInvokeLambdaRole.Arn # Add this line
 
 Outputs:
   EventBridgeRuleArn:
