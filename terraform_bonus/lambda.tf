@@ -13,7 +13,7 @@ resource "aws_lambda_function" "nba_game_updates" {
   environment {
     variables = {
       NBA_GAME_SECRET_NAME = aws_secretsmanager_secret.nba_game.name
-      SNS_TOPIC_ARN = aws_sns_topic.NBA_Game_Updates.arn
+      SNS_TOPIC_ARN = "arn:aws:sns:eu-west-2:449095351082:my-custom-nba-topic"
     }
   }
 
@@ -74,6 +74,15 @@ resource "aws_iam_policy" "lambda_policy" {
         ]
         Resource = [
           aws_secretsmanager_secret.nba_game.arn
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = [
+          aws_kms_key.nba_secret_key.arn
         ]
       },
       {
