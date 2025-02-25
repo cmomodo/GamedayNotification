@@ -5,12 +5,12 @@ variable "schedule_expression" {
 
 variable "lambda_function_arn" {
   type        = string
-  description = "The ARN of the Lambda function to invoke"
+  description = "The ARN of the Lambda function to trigger."
 }
 
 variable "rule_name" {
   type        = string
-  description = "The name of the EventBridge rule"
+  description = "The name of the EventBridge rule."
 }
 
 variable "description" {
@@ -20,7 +20,7 @@ variable "description" {
 
 variable "environment_tag" {
   type        = string
-  description = "The environment tag for the EventBridge rule"
+  description = "The environment tag to apply to the EventBridge rule."
 }
 
 variable "target_id" {
@@ -30,5 +30,5 @@ variable "target_id" {
 
 variable "lambda_function_name" {
   type        = string
-  description = "The name of the Lambda function"
+  description = "The name of the Lambda function to trigger."
 }
