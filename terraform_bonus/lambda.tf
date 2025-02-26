@@ -1,16 +1,16 @@
 resource "aws_lambda_function" "nba_game_updates" {
-  function_name = "nba-game-updates-lambda"
+  function_name = var.lambda_function_name
   description   = "Fetch NBA game updates"
-  handler       = "index.handler"
-  runtime       = "nodejs16.x"
-  timeout       = 30
-  memory_size   = 128
+  handler       = "lambda_function.lambda_handler"
+  runtime       = var.lambda_runtime
+  timeout       = var.lambda_timeout
+  memory_size   = var.lambda_memory_size
 
   # The path to the function's deployment package inside the local filesystem.
-  filename      = "lambda_function_payload.zip"
+  filename      = "my_deployment_package.zip"
 
   # Source code archive deployment configuration.
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+  source_code_hash = filebase64sha256("my_deployment_package.zip")
 
   # The IAM role assumed by the Lambda function.
   role = aws_iam_role.lambda_role.arn

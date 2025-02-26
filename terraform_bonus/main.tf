@@ -21,10 +21,10 @@ resource "aws_vpc" "nba_game" {
   }
 }
 
-module "nba_game_updates_eventbridge" {
-  source          = "./modules/eventbridge"
-  environment_tag = "dev"
-  rule_name       = "nba-game-updates-rule"
-  lambda_function_arn = aws_lambda_function.nba_game_updates.arn
-  lambda_function_name = aws_lambda_function.nba_game_updates.function_name
-}
+# module "nba_game_updates_eventbridge" {
+#   source          = "./modules/eventbridge"
+#   environment_tag = "dev"
+#   rule_name       = "nba-game-updates-rule"
+#   lambda_function_arn = aws_lambda_function.nba_game_updates.arn
+#   lambda_function_name = aws_lambda_function.nba_game_updates.function_name
+# }
